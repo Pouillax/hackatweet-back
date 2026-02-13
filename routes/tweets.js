@@ -49,18 +49,18 @@ router.post("/", (req, res) => {
   });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   const { token } = req.body;
   const tweetId = req.params.id;
-  User.findOne({ token }).then(user => {
+  User.findOne({ token }).then((user) => {
     if (!user) {
-      res.json({ result: false, error: 'User not found' });
+      res.json({ result: false, error: "User not found" });
       return;
     }
 
-    Tweet.findOne({ _id: tweetId, author: user._id }).then(tweet => {
+    Tweet.findOne({ _id: tweetId, author: user._id }).then((tweet) => {
       if (!tweet) {
-        res.json({ result: false, error: 'Tweet not found or unauthorized' });
+        res.json({ result: false, error: "Tweet not found or unauthorized" });
         return;
       }
 
@@ -68,6 +68,38 @@ router.delete('/:id', (req, res) => {
         res.json({ result: true });
       });
     });
+  });
+});
+
+//GET hashtags
+router.get("/trends/all", (req, res) => {
+  Tweet.find().then((tweets) => {
+    const hashtagCount = {};
+
+    tweets.forEach((tweet) => {
+      const hashtags = tweet.content.match(/#\w+/g);
+
+      if (hashtags) {
+        hashtags.forEach((hashtag) => {
+          const lowercaseHashtag = hashtag.toLowerCase();
+
+          if (hashtagCount[lowercaseHashtag]) {
+            hashtagCount[lowercaseHashtag]++;
+          } else {
+            hashtagCount[lowercaseHashtag] = 1;
+          }
+        });
+      }
+    });
+
+    const trends = Object.keys(hashtagCount)
+      .map((hashtag) => ({
+        hashtag: hashtag,
+        count: hashtagCount[hashtag],
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    res.json({ result: true, trends });
   });
 });
 
