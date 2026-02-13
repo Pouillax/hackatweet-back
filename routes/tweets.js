@@ -12,6 +12,17 @@ router.get("/", (req, res) => {
       res.json({ result: true, tweets: data });
     });
 });
+//GET par hashtag
+router.get("/hashtag/:hashtag", (req, res) => {
+  const hashtag = req.params.hashtag;
+  Tweet.find({ content: { $regex: `#${hashtag}`, $options: "i" } })
+    .populate("author", ["username", "firstname"])
+    .populate("likes", ["username"])
+    .sort({ createdAt: -1 })
+    .then((data) => {
+      res.json({ result: true, tweets: data });
+    });
+});
 
 //POST un tweet
 router.post("/", (req, res) => {
@@ -71,7 +82,7 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-//GET hashtags
+//GET hashtags avec nombre d'occurences pour compter
 router.get("/trends/all", (req, res) => {
   Tweet.find().then((tweets) => {
     const hashtagCount = {};
