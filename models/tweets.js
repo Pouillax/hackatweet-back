@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const tweetSchema = mongoose.Schema({
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' }, // cherche un utilisateur par id dans la bdd
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' }, //foreign key pour trouver l'auteur
   content: String,        //max 280 caractères
-  createdAt: Date,        // date de création du tweet
-  isLiked: Boolean
+  createdAt: Date,        // Date de création du tweet
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }], // foreign key pour trouver le nombre de likes (avec .length)
 });
 
 
