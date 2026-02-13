@@ -49,4 +49,26 @@ router.post("/", (req, res) => {
   });
 });
 
+router.delete('/:id', (req, res) => {
+  const { token } = req.body;
+  const tweetId = req.params.id;
+  User.findOne({ token }).then(user => {
+    if (!user) {
+      res.json({ result: false, error: 'User not found' });
+      return;
+    }
+
+    Tweet.findOne({ _id: tweetId, author: user._id }).then(tweet => {
+      if (!tweet) {
+        res.json({ result: false, error: 'Tweet not found or unauthorized' });
+        return;
+      }
+
+      Tweet.deleteOne({ _id: tweetId }).then(() => {
+        res.json({ result: true });
+      });
+    });
+  });
+});
+
 module.exports = router;
