@@ -24,12 +24,16 @@ router.get("/hashtag/:hashtag", (req, res) => {
     });
 });
 
+
 //POST un tweet
 router.post("/", (req, res) => {
+    console.log("AUTH HEADER BACK:", req.headers.authorization);
+
   const authHeader = req.headers.authorization; 
-  const token = authHeader?.startsWith("Porteur ")
-    ? authHeader.slice(8)
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
     : null;
+  console.log("TOKEN PARSE:", token);
 
   const { content } = req.body;
 

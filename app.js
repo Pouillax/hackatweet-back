@@ -18,7 +18,10 @@ var app = express();
 
 // Configuration du CORS pour permettre les requêtes depuis le frontend
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 // Middlewares
 app.use(logger('dev'));
