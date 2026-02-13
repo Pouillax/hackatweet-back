@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
 
 /* POST nouvel utilisateur (signup)*/
-router.get("/", (req, res) => {
+router.post("/signup", (req, res) => {
   if (!checkBody(req.body, ["firstname", "username", "password"])) {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
