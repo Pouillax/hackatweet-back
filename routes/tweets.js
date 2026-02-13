@@ -26,26 +26,33 @@ router.get("/hashtag/:hashtag", (req, res) => {
 
 //POST un tweet
 router.post("/", (req, res) => {
-  const { token, content } = req.body;
+  const authHeader = req.headers.authorization; 
+  const token = authHeader?.startsWith("Porteur ")
+    ? authHeader.slice(8)
+    : null;
+
+  const { content } = req.body;
+
+  if (!token) {
+    return res.json({ result: false, error: "Missing token" });
+  }
+
   if (!content || content.trim().length === 0) {
-    res.json({ result: false, error: "Content cannot be empty" });
-    return;
+    return res.json({ result: false, error: "Content cannot be empty" });
   }
 
   if (content.length > 280) {
-    res.json({ result: false, error: "Content exceeds 280 characters" });
-    return;
+    return res.json({ result: false, error: "Content exceeds 280 characters" });
   }
 
   User.findOne({ token }).then((user) => {
     if (!user) {
-      res.json({ result: false, error: "User not found" });
-      return;
+      return res.json({ result: false, error: "User not found" });
     }
 
     const newTweet = new Tweet({
       author: user._id,
-      content: content,
+      content,
       createdAt: new Date(),
       likes: [],
     });
@@ -59,6 +66,7 @@ router.post("/", (req, res) => {
     });
   });
 });
+
 
 router.delete("/:id", (req, res) => {
   const { token } = req.body;
