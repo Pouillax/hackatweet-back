@@ -1,21 +1,38 @@
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+// Chargement des variables d'environnement
+require('dotenv').config();
 
-var tweetsRouter = require("./routes/tweets");
-var usersRouter = require("./routes/users");
+// Import des modules nécessaires
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+
+// Connexion à la base de données
+require('./models/connection');
+
+// Import des routes
+var usersRouter = require('./routes/users');
+var tweetsRouter = require('./routes/tweets');
 
 var app = express();
-const cors = require("cors");
+
+// Configuration du CORS pour permettre les requêtes depuis le frontend
+const cors = require('cors');
 app.use(cors());
-app.use(logger("dev"));
+
+// Middlewares
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use("/tweets", tweetsRouter)
-app.use("/users", usersRouter);
+// Configuration des routes
+app.use('/users', usersRouter);
+app.use('/tweets', tweetsRouter);
 
-module.exports = app;
+// Démarrage du serveur
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+});
